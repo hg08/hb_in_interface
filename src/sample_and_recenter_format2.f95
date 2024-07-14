@@ -32,13 +32,12 @@ SUBROUTINE sample_and_recenter_format2(pos_filename,nmo_start,nmo_end,nat,ns,n_s
   TYPE(atom), DIMENSION(nat,n_samples),INTENT(INOUT) :: atom_info
   ! Local varables
   INTEGER :: iatom,imovie,i
-  INTEGER :: num_wat_pairs 
   INTEGER, PARAMETER :: n_axis = 2  ! n_axis=2 means z-axis is the normal axis.
   REAL(KIND=rk) :: sum_mass
   REAL(KIND=rk) :: center_pos 
   
   ! Initialization
-  iatom = 0; imovie = 0; i = 0; num_wat_pairs = 0
+  iatom = 0; imovie = 0; i = 0
   nb_divx = nint(boxsize(1)/whish_size) ! round the argument to the nearest integer.
   nb_divy = nint(boxsize(2)/whish_size) ! round the argument to the nearest integer.
   nb_divz = nint(boxsize(3)/whish_size) ! round the argument to the nearest integer.
@@ -47,22 +46,18 @@ SUBROUTINE sample_and_recenter_format2(pos_filename,nmo_start,nmo_end,nat,ns,n_s
   divz = boxsize(3)/REAL(nb_divz,rk)
   n_grid = nb_divx * nb_divy
   WRITE(*,*)"n_grid=", n_grid
-  !For pure water system:
-  !(TODO)Formula may have to added for the cases of other systems
-  num_wat_pairs = (nat/3)*(nat/3-1)/2
-
   !=======================
   !read in trajectory file 
   !=======================
   open(10,file=trim(pos_filename))
   ! Now starting read data
-  write(*,*) "Total number of atoms: ", nat
+  !WRITE(*,*) "Total number of atoms: ", nat
   CALL read_traj(10,nmo_start,nmo_end,ns,nat,n_samples,sampled_movie,sampled_time,sampled_energy,atom_info) 
   close(10)
-  write(6,*) 'End of trajectory reading.'
+  WRITE(6,*) 'End of trajectory reading.'
 
   !=============
-  !write in file
+  !WRITE in file
   !=============
   sampled_pos_filename = 'recentered_traj_pos_sampled.xyz'
   open(10,file=sampled_pos_filename)
@@ -71,9 +66,9 @@ SUBROUTINE sample_and_recenter_format2(pos_filename,nmo_start,nmo_end,nat,ns,n_s
     sum_mass = 0.d0
     center_pos = 0.d0
 
-    write (10,'(I8)') nat
+    WRITE (10,'(I8)') nat
     WRITE(10,100) ' i = ',i-1,', time = ',sampled_time(i),', E = ',sampled_energy(i)
-    WRITE(*,100) ' i = ',i-1,', time = ',sampled_time(i),', E = ',sampled_energy(i)
+    !WRITE(*,100) ' i = ',i-1,', time = ',sampled_time(i),', E = ',sampled_energy(i)
     100 FORMAT (A5,I8,A9,F12.3,A6,F20.10)
     !130 FORMAT (5X,I8,9X,F12.3,6X,F20.10)
   
@@ -128,7 +123,7 @@ SUBROUTINE sample_and_recenter_format2(pos_filename,nmo_start,nmo_end,nat,ns,n_s
 
   ENDDO step
 
-  write(6,*)'Sampled trajectory is written: ', sampled_pos_filename
+  WRITE(6,*)'Sampled trajectory is written: ', sampled_pos_filename
   close(10)
 
 END SUBROUTINE sample_and_recenter_format2

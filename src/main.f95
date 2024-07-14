@@ -14,7 +14,7 @@ PROGRAM main_interface
   !==========
   !parameters
   !==========
-  integer, parameter :: rk=8              
+  !integer, parameter :: rk=8              
 
   ! The array atom_info can be shared by subroutines  
   TYPE(atom), ALLOCATABLE, DIMENSION(:,:) :: atom_info
@@ -25,7 +25,7 @@ PROGRAM main_interface
   INTEGER, ALLOCATABLE, DIMENSION(:) :: sampled_movie
   REAL(KIND=rk), ALLOCATABLE, DIMENSION(:) :: sampled_time, sampled_energy
   ! For griding
-  REAL(KIND=rk), PARAMETER :: whish_size=0.5d0! Angstrom
+  !REAL(KIND=rk), PARAMETER :: whish_size=0.5d0! Angstrom
   INTEGER :: nb_divx, nb_divy, nb_divz, n_grid 
   REAL(KIND=rk) :: divx, divy, divz
 
@@ -67,7 +67,7 @@ PROGRAM main_interface
   filename=""; pos_filename=""; sampled_pos_filename=""
   surf_filename=""
   list_oxygen_pairs=""
-  thickness=1.0
+  thickness=1.d0
   ns_2nd = 1
 
   call system_clock(begin_time,rat) !To get the starting time
@@ -88,9 +88,10 @@ PROGRAM main_interface
   !========================
   ! Sampling the trajectory
   !========================
-  !!CASE1: If one does not need to recenter, one can just call sample_format2()
+  !CASE1: If one does not need to recenter, one can just call sample_format2()
   !CALL sample_format2(pos_filename,nmo_start,nmo_end,nat,ns,n_samples)
   !CASE2: If one have to recenter, one call sample_and_recenter_format2() instead.
+  WRITE(*,*) "sample and recenter_format2 starting..."
   CALL sample_and_recenter_format2(pos_filename,nmo_start,nmo_end,nat,ns,n_samples,boxsize,&
        sampled_pos_filename,sampled_movie,sampled_time,sampled_energy, &
        nb_divx,nb_divy,nb_divz,n_grid,divx,divy,divz,whish_size,atom_info)
@@ -105,25 +106,31 @@ PROGRAM main_interface
   surf_info = 0
   !write(*,*) "SHAPE(surf_info)= ", SHAPE(surf_info)
   ns_2nd = 1 ! sample freq is 1, ie., all data are sampled
+  WRITE(*,*) "read_surf_traj is starting..."
   CALL read_surf_traj(surf_filename,nmo_start,nmo_end,ns_2nd,n_grid,n_samples,surf_info)
   
   ! Use array instead of linked list, it may be faster. 
   allocate(indx_array(n_samples,nat))
   indx_array = 0
 
+  WRITE(*,*) "molecules_in_interface() is starting..."
   CALL molecules_in_interface(n_samples,nat,indx_array,atom_info,&
      n_grid,divx,divy,divz,nb_divx,nb_divy,nb_divz,thickness,surf_info)
 
   !To determine the indices of Oxygens' pairs that located in one of the interfaces.
+  WRITE(*,*) "ghbond_interface() is starting..."
   CALL ghbond_interface(filename,list_oxygen_pairs,n_samples,nat,indx_array)
 
   !Calculate n_HB(t),k(t),etc for pure water system. If the format of data is different, one may use another funtion, eg ghbacf_n_pbc_format2().
+  WRITE(*,*) "c is starting..."
   CALL ghbacf_interface_c_pbc_format2(boxsize,delta_t0,filename,pos_filename,list_oxygen_pairs, &
                     n_samples,nat,ns,criterion,atom_info,n_grid,divx,divy,divz,nb_divx,nb_divy,&
                     nb_divz,thickness,surf_info)
+  WRITE(*,*) "n is starting..."
   CALL ghbacf_interface_n_pbc_format2(boxsize,delta_t0,filename,pos_filename,list_oxygen_pairs, &
                     n_samples,nat,ns,criterion,atom_info,n_grid,divx,divy,divz,nb_divx,nb_divy,&
                     nb_divz,thickness,surf_info)
+  WRITE(*,*) "k is starting..."
   CALL ghbacf_interface_k_pbc_format2(boxsize,delta_t0,filename,pos_filename,list_oxygen_pairs, &
                     n_samples,nat,ns,criterion,atom_info,n_grid,divx,divy,divz,nb_divx,nb_divy,&
                     nb_divz,thickness,surf_info)

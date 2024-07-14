@@ -28,8 +28,9 @@ OBJ= $(addprefix $(OBJ_DIR)/,$(notdir $(SRC:.f95=.o))) #List of the object files
 #gfortran commands
 #=================
 # @$(command) here it is @$(FC) = silent mode. No line is written if everything is ok.
-# $@ = Name of the target (name before the column = vvaf, module.o,...)
-# $< = Name of the first dependance (name after the column = $(OBJ), module.f95,...)
+#Here ‘$<’ is the automatic variable that holds the name of the prerequisite; 
+#‘$@’ is the automatic variable that holds the name of the target;
+# See https://www.gnu.org/software/make/manual/make.html#Reading 
 
 #Creation of the execuatble
 $(EXEC): $(OBJ) #If target (main) is older than $(OBJ)

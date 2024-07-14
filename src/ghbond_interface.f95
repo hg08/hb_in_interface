@@ -18,7 +18,7 @@
       !========================
       !Parameters and variables
       !========================
-      character(LEN=200),INTENT(IN) :: filename            ! specific filename to analyz data
+      character(LEN=200),INTENT(IN) :: filename ! specific filename to analyz data
       character(LEN=200),INTENT(INOUT) :: list
       INTEGER,INTENT(IN) :: nmo ! steps of trajectory
       INTEGER,INTENT(IN) :: nat ! number of atoms
@@ -26,38 +26,39 @@
       INTEGER,DIMENSION(nmo,nat),INTENT(INOUT) :: arr
 
       ! Local variables
-      INTEGER,PARAMETER :: step=100 ! The parameter 'step' should not be too small, otherwise, you will waste your time on many repeated calculation. 
+      INTEGER,PARAMETER :: step = 100 ! The parameter 'step' should not be too small, otherwise, you will waste your time on many repeated calculation. 
                                     ! Here, 100 means : "We select the molecules in interface every 100*ns steps."
-      integer :: i,n,m1,m2,i1,i2,jj
+      integer :: i, n, m1, m2, i1, i2, jj
       integer,dimension (nat) :: ndx_O
      
       !Initialization
-      ndx_O=0;n=0
+      ndx_O = 0
+      n = 0
 
       !====================================================
       !Producing the O-O list for O atom pairs in interface     
       !====================================================
-      list=trim(filename)//'_O_in_interface_list.dat'
+      list = trim(filename)//'_O_in_interface_list.dat'
       open(20,file=list)
 
       !DO-LOOP on each row of the indx array 'arr'
-      ROW: DO jj=1,nmo,step  ! start, end [, step]
-        ndx_O(:)=arr(jj,:) 
+      ROW: DO jj = 1, nmo, step  ! start, end [, step]
+        ndx_O(:) = arr(jj,:) 
         !===============================================
         !Calculate the number of O atoms in this time jj
         !===============================================
-        n=0
-        do i=1,nat
+        n = 0
+        do i = 1, nat
           if (ndx_O(i)>0) then
-             n=n+1
+             n = n + 1
           endif
         enddo
 
-        do i1=1,n-1 ! No O atom can not be bonded to itself 
-          m1=ndx_O(i1)
-          do i2=i1+1,n 
-            m2=ndx_O(i2)
-            write(20,*) m1,m2
+        do i1 = 1, n-1 ! No O atom can not be bonded to itself 
+          m1 = ndx_O(i1)
+          do i2 = i1 + 1, n 
+            m2 = ndx_O(i2)
+            write(20,*) m1, m2
           enddo
         enddo
       ENDDO ROW

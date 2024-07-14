@@ -1,4 +1,4 @@
-for i in `seq 4 1 6`
+for i in `seq 1 1 6`
     do
-        ./ihb_sulpizi < input_main_sample_128w_itp_$i
+        ihb_sulpizi < input/input_main_sample_128w_itp_$i
     done

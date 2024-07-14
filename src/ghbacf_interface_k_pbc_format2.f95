@@ -40,12 +40,14 @@
       !==========
       !parameters
       !==========
+      integer, parameter :: rk=8 ! local 
+      integer, parameter :: d_len=3 ! for storing the length of the character which represents the thickness of the interface
+
       character(LEN=200), INTENT(INOUT) :: filename,pos_filename
       character(LEN=200), INTENT(IN) :: list_filename
       integer, INTENT(IN) :: criterion
       INTEGER, INTENT(IN) :: nat ! number of atoms
       INTEGER, INTENT(IN) :: n_samples  !n_samples = INT(nmo/ns)
-      integer, parameter :: rk=8 ! local 
       real(kind=rk), dimension(3),INTENT(IN) :: boxsize
       REAL(kind=rk), INTENT(IN) :: delta_t0
       TYPE(atom), DIMENSION(nat,n_samples),INTENT(IN) :: atom_info
@@ -70,31 +72,31 @@
       real(kind=rk), allocatable,dimension (:,:)         :: x,y,z
       integer, allocatable,dimension(:)         :: ndx_1,ndx_2,nhb_exist
       integer, dimension(4)   :: ndx_3_list
-      CHARACTER(len=1) :: char_thickness ! for saving the thickness in the files' names
+      CHARACTER(len=d_len) :: char_thickness ! for saving the thickness in the files' names
       real(kind=rk)  :: scalar 
       logical,allocatable,dimension (:)  :: hb_exist
       INTEGER :: nmo ! nmo is not necessary, we set nmo = n_samples, because we do not want to change too much
       INTEGER :: nwat ! number of water molecules
-      INTEGER :: i,j,k,jj 
+      INTEGER :: i, j, k, jj 
       INTEGER :: index_mol1, index_mol2
-      LOGICAL :: condition1,condition2
+      LOGICAL :: condition1, condition2
 
       !==================
       !Initialization
-      ave_h =0.d0; scalar =0.d0
-      pm =0.d0; cosphi =0.d0
+      ave_h = 0.d0; scalar = 0.d0
+      pm = 0.d0; cosphi = 0.d0
       r21 = 0.d0; r23 = 0.d0
       r31 = 0.d0; r13= 0.d0; r32 = 0.d0
       hb_per_frame = 0.d0; tot_hb = 0.d0
       r1 = 0.d0; r2 = 0.d0; r3 = 0.d0
-      nmo = n_samples; nwat=0 
-      ndx_3_list=0
-      index_mol1=0; index_mol2=0
-      condition1=.FALSE.
-      condition2=.FALSE.
+      nmo = n_samples; nwat = 0 
+      ndx_3_list = 0
+      index_mol1 = 0; index_mol2 = 0
+      condition1 = .FALSE.
+      condition2 = .FALSE.
 
       !To obtain the total number of water pairs
-      nwat=get_total_number_of_lines(list_filename)
+      nwat = get_total_number_of_lines(list_filename)
       write(*,*) 'ghbacf_c: # of water pairs (nwat) =', nwat
       allocate(ndx_1(nwat))          
       allocate(ndx_2(nwat))          
@@ -102,14 +104,14 @@
       !read data from the list file
       !============================
       open(10,file=list_filename)     
-      do k=1,nwat
+      do k = 1, nwat
           read(10,*)ndx_1(k),ndx_2(k)
       enddo
       close(10)
       !============================
 
       delta_t = REAL(ns,rk) * delta_t0  ! unit: ps
-      ddelta_t= 2*delta_t ! ddelta_t will be used in calculate k(t)
+      ddelta_t = 2*delta_t ! ddelta_t will be used in calculate k(t)
       write(*,*) "New total steps (nmo):", nmo
       allocate(x(nat,nmo))
       allocate(y(nat,nmo))
@@ -132,37 +134,34 @@
       allocate(corr_h(nmo))
       allocate(hb_exist(nmo))
       ! loop
-      corr_h(:)=0.d0      
-      tot_hb=0.d0
-      tot_nhb=0
+      corr_h(:) = 0.d0      
+      tot_hb = 0.d0
+      tot_nhb = 0
       
       ! loop
-      hb(:)=0.d0
-      nhb_exist(:)=0 
+      hb(:) = 0.d0
+      nhb_exist(:) = 0 
      !=============
      !The main loop
      !=============      
-      kLOOP: do k=1,nwat
-        qj=0
-        nqj=0 ! The number of bonded times for k-th form of quasi-HB 
-        m1=ndx_1(k)
-        m2=ndx_2(k)
-        !write(*,*) "ghbacf_c: pos_filename: ", pos_filename
-        ndx_3_list=hydrogen_ndx_list(ndx_1(k),ndx_2(k),pos_filename,nat,boxsize)
-        write(*,*) "The ",k,"-th pair: ndx_of H (1st,2nd,3rd,4th):",& 
-            ndx_3_list(1), ndx_3_list(2), ndx_3_list(3), ndx_3_list(4)
+      kLOOP: do k = 1, nwat
+        qj = 0
+        nqj = 0 ! The number of bonded times for k-th form of quasi-HB 
+        m1 = ndx_1(k)
+        m2 = ndx_2(k)
+        ndx_3_list = hydrogen_ndx_list(ndx_1(k),ndx_2(k),pos_filename,nat,boxsize)
         ! Calculate h(j)
         ! A LOOP on ndx_3_list
-        TIME: do jj =1, nmo
-          h(jj)=0.d0
-          hb_exist(jj)=.False.
+        TIME: do jj = 1, nmo
+          h(jj) = 0.d0
+          hb_exist(jj) = .False.
 
           ! Check if the pairs are located in one of the interfaces 
-          index_mol1 =grid_index(atom_info(m1,jj)%coord(1), &
-              atom_info(m1,jj)%coord(2),divx,divy,nb_divx) 
-          WRITE(*,*) "index_mol1 = ",index_mol1
-          index_mol2 =grid_index(atom_info(m2,jj)%coord(1), &
-              atom_info(m2,jj)%coord(2),divx,divy,nb_divx) 
+          index_mol1 = grid_index(atom_info(m1,jj)%coord(1), &
+              atom_info(m1,jj)%coord(2),divx,divy,nb_divx,nb_divy) 
+          !WRITE(*,*) "index_mol1 = ",index_mol1
+          index_mol2 = grid_index(atom_info(m2,jj)%coord(1), &
+              atom_info(m2,jj)%coord(2),divx,divy,nb_divx,nb_divy) 
 
           !For surf 1
           condition1 = pair_in_surf1(surf_info(1,index_mol1,jj),&
@@ -175,7 +174,7 @@
               atom_info(m1,jj)%coord(3), &
               surf_info(2,index_mol2,jj), &
               atom_info(m2,jj)%coord(3),thickness ) 
-          WRITE(*,*) condition1, condition2 
+          !WRITE(*,*) condition1, condition2 
 
           !This condition is the additional condition for the establishment 
           ! of interface hydrogen bonds, which is the core of this method. 
@@ -248,10 +247,7 @@
       enddo kLOOP   
       deallocate(hb_exist,nhb_exist)
       hb_per_frame = tot_hb/REAL(nmo,rk)
-      write(*,*) "Total H-bonds exists in history: ", tot_hb
       ave_h = hb_per_frame/REAL(nwat,rk) 
-      write(*,*) "hb per frame:", hb_per_frame
-      write(*,*) "<h> =", ave_h
       !=========================================
       !Calculate the number of ever bonded pairs
       !=========================================
@@ -295,7 +291,8 @@
      !Write the correlation
      !k_HB(t)     
      !======================
-      char_thickness = nth(str(nint(thickness)),1)
+      !char_thickness = nth(str(nint(thickness)),d_len)
+      char_thickness = nth(str(thickness),d_len)
       open(10,file=trim(filename)//'_wat_pair_hbacf_k_ihb_'//&
         char_thickness//'.dat')
         do i=1,nmo
