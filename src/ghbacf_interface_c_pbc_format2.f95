@@ -33,48 +33,47 @@
       !==========
       !parameters
       !==========
-      integer, parameter :: rk=8 ! local 
-      integer, parameter :: d_len=3 ! for storing the length of the character which represents the thickness of the interface
+      integer,parameter :: rk=8 ! local 
+      integer,parameter :: d_len=1 ! for storing the length of the CHARACTER which represents the thickness of the interface
       
-      character(LEN=200), INTENT(INOUT) :: filename,pos_filename
-      character(LEN=200), INTENT(IN) :: list_filename
-      integer, INTENT(IN) :: criterion
-      INTEGER, INTENT(IN) :: nat ! number of atoms
-      INTEGER, INTENT(IN) :: n_samples  !n_samples = INT(nmo/ns)
-      real(kind=rk), dimension(3), INTENT(IN) :: boxsize
-      TYPE(atom), DIMENSION(nat,n_samples), INTENT(IN) :: atom_info
-      REAL(kind=rk), INTENT(IN) :: thickness ! the thickness of the instantaneous interfaces
-      !REAL, PARAMETER :: whish_size=0.5 ! Angstrom
-      INTEGER, INTENT(IN) :: nb_divx, nb_divy, nb_divz, n_grid 
-      REAL(kind=rk), INTENT(IN) :: divx, divy, divz
+      CHARACTER(LEN=200),INTENT(INOUT) :: filename,pos_filename
+      CHARACTER(LEN=200),INTENT(IN) :: list_filename
+      integer,INTENT(IN) :: criterion
+      INTEGER,INTENT(IN) :: nat ! number of atoms
+      INTEGER,INTENT(IN) :: n_samples  !n_samples = INT(nmo/ns)
+      real(KIND=rk),dimension(3), INTENT(IN) :: boxsize
+      TYPE(atom),DIMENSION(nat,n_samples), INTENT(IN) :: atom_info
+      REAL(KIND=rk),INTENT(IN) :: thickness ! the thickness of the instantaneous interfaces
+      !REAL,PARAMETER :: whish_size=0.5 ! Angstrom
+      INTEGER,INTENT(IN) :: nb_divx, nb_divy, nb_divz, n_grid 
+      REAL(KIND=rk),INTENT(IN) :: divx, divy, divz
       REAL(KIND=rk),DIMENSION(2,n_grid,n_samples),INTENT(IN) :: &
           surf_info
 
       !Local variables
-      real(kind=rk), parameter :: rooc=12.25d0                 ! cutoff distance of rOO (3.5**2 )
-      real(kind=rk), parameter :: cosPhiC123=0.866d0              ! 1.732/2; phiC=pi/6.
-      real(kind=rk), parameter :: cosPhiC132=-0.5d0            ! -1./2; phiC132=2pi/3.
-      !real(kind=rk),parameter :: h_min=0.d5 ! condition for the existence of a h-bond for a step
-      real(kind=rk), parameter :: hb_min=0.5d0 ! condition for the existence of h-bond for a pair of water molecules
-      real(kind=rk) :: r13,cosphi,pm, cosphi_, pm_
-      real(kind=rk) :: r21,r31,r32,r23 ! For the second criterion of HB
-      real(kind=rk) :: qj,tot_hb,delta_t,delta_t0,hb_per_frame,ave_h
-      real(kind=rk), dimension(3) :: r1, r2, r3 ! pbc 
-      integer :: m1,m2,m3,mt,nqj,tot_nhb,n_bonded_pairs,ns
-      real(kind=rk), allocatable,dimension (:) :: h,hb,corr_h
-      real(kind=rk), allocatable,dimension (:) :: sq_corr_h ! sq_corr_h[i] = corr_h[i]**2
-      real(kind=rk), allocatable,dimension (:,:) :: x,y,z
-      integer, allocatable,dimension(:) :: ndx_1,ndx_2,nhb_exist
-      integer, dimension(4)   :: ndx_3_list
-      real(kind=rk)  :: scalar, sq 
+      real(KIND=rk),parameter :: rooc=12.25d0                 ! cutoff distance of rOO (3.5**2 )
+      real(KIND=rk),parameter :: cosPhiC123=0.866d0              ! 1.732/2; phiC=pi/6.
+      real(KIND=rk),parameter :: cosPhiC132=-0.5d0            ! -1./2; phiC132=2pi/3.
+      !real(KIND=rk),parameter :: h_min=0.d5 ! condition for the existence of a h-bond for a step
+      real(KIND=rk),parameter :: hb_min=0.5d0 ! condition for the existence of h-bond for a pair of water molecules
+      real(KIND=rk) :: r13, cosphi, pm, cosphi_, pm_
+      real(KIND=rk) :: r21, r31, r32, r23 ! For the second criterion of HB
+      real(KIND=rk) :: qj, tot_hb, delta_t, delta_t0, hb_per_frame, ave_h
+      real(KIND=rk),dimension(3) :: r1, r2, r3 ! pbc 
+      integer :: m1, m2, m3, mt, nqj, tot_nhb, n_bonded_pairs, ns
+      real(KIND=rk),allocatable,dimension (:) :: h, hb, corr_h
+      real(KIND=rk),allocatable,dimension (:) :: sq_corr_h ! sq_corr_h[i] = corr_h[i]**2
+      real(KIND=rk),allocatable,dimension (:,:) :: x, y, z
+      integer,allocatable,dimension(:) :: ndx_1,ndx_2,nhb_exist
+      integer,dimension(4) :: ndx_3_list
+      real(KIND=rk) :: scalar, sq 
       logical,allocatable,dimension (:)  :: hb_exist
       INTEGER  :: nmo  ! nmo is not necessary, we set nmo = n_samples, because we do not want to change too much
       INTEGER :: nwat ! number of water molecules
-      INTEGER :: i,j,k,jj 
+      INTEGER :: i, j, k, jj 
       CHARACTER(len=d_len) :: char_thickness ! for saving the thickness in the files' names
       INTEGER :: index_mol1, index_mol2
       LOGICAL :: condition1, condition2
-      !REAL(kind=rk) :: distance2
       !==============
       !Initialization
       !==============
@@ -103,7 +102,7 @@
 
       !To obtain the total number of water pairs
       nwat=get_total_number_of_lines(list_filename)
-      write(*,*) 'ghbacf_c: # of water pairs (nwat) =', nwat
+      !WRITE(*,*) 'ghbacf_c: # of water pairs (nwat) =', nwat
       allocate(ndx_1(nwat))          
       allocate(ndx_2(nwat))          
       !============================
@@ -117,7 +116,7 @@
       !============================
 
       delta_t = REAL(ns,rk)*delta_t0  ! unit: ps
-      write(*,*) "New total steps (nmo):", nmo
+      !WRITE(*,*) "New total steps (nmo):", nmo
       allocate(x(nat,nmo))
       allocate(y(nat,nmo))
       allocate(z(nat,nmo))
@@ -151,8 +150,6 @@
         m1 = ndx_1(k)
         m2 = ndx_2(k)
         ndx_3_list = hydrogen_ndx_list(ndx_1(k),ndx_2(k),pos_filename,nat,boxsize)
-        !write(*,*) "The ",k,"-th pair: ndx_of H (1st,2nd,3rd,4th):",& 
-        !    ndx_3_list(1), ndx_3_list(2), ndx_3_list(3), ndx_3_list(4)
         ! Calculate h(j)
         ! A LOOP on ndx_3_list
         TIME: do jj = 1, nmo
@@ -162,7 +159,6 @@
           ! Check if the pairs are located in one of the interfaces 
           index_mol1 = grid_index(atom_info(m1,jj)%coord(1), &
               atom_info(m1,jj)%coord(2),divx,divy,nb_divx,nb_divy) 
-          !WRITE(*,*) "index_mol1 = ",index_mol1
           index_mol2 = grid_index(atom_info(m2,jj)%coord(1), &
               atom_info(m2,jj)%coord(2),divx,divy,nb_divx,nb_divy) 
 
@@ -177,7 +173,6 @@
               atom_info(m1,jj)%coord(3), &
               surf_info(2,index_mol2,jj), &
               atom_info(m2,jj)%coord(3),thickness ) 
-          !WRITE(*,*) condition1, condition2 
 
           !This condition is the additional condition for the establishment 
           ! of interface hydrogen bonds, which is the core of this method. 
@@ -202,7 +197,6 @@
                       if ((r21 .lt. rooc ).and. ( (cosphi .gt. cosPhiC123) .or. &
                           (cosphi_ .gt. cosPhiC123) )                      &
                          ) then
-                          !WRITE(*,*) "# of HB along time: ", qj+1    
                           h(jj) = 1.0d0 
                           hb_exist(jj) = .True.
                           qj = qj + h(jj) ! To calculate ave population of HB over all starting points for one pair of water                           
@@ -279,9 +273,9 @@
       open(10,file=trim(filename)//'_wat_pair_hbacf_h_ihb_' &
         //char_thickness//'.dat')
         do i=1,nmo
-            write(10,*)REAL(i-1,rk)*delta_t, corr_h(i), sq_corr_h(i)
+            WRITE(10,*)REAL(i-1,rk)*delta_t, corr_h(i), sq_corr_h(i)
         enddo
-        write(6,*)'written in '//trim(filename)//&
+        WRITE(6,*)'written in '//trim(filename)//&
                   '_wat_pair_hbacf_h_ihb_'//char_thickness//'.dat'
       close(10)
      !=====================
@@ -291,9 +285,9 @@
       open(10,file=trim(filename)//'_wat_pair_hbacf_log_h_ihb_'//&
         char_thickness//'.dat')
         do i=1,nmo
-            write(10,*) REAL(i-1,rk)*delta_t,log(corr_h(i))
+            WRITE(10,*) REAL(i-1,rk)*delta_t,log(corr_h(i))
         enddo
-        write(6,*)'written in '//trim(filename)//&
+        WRITE(6,*)'written in '//trim(filename)//&
                   '_wat_pair_hbacf_log_h_ihb_'//char_thickness//'.dat'
       close(10)
      !===========
@@ -301,9 +295,9 @@
      !===========      
       open(10,file=trim(filename)//'_wat_pair_ave_h_ihb_'//&
         char_thickness//'.dat')
-        write(10,*) 'Ave. No. bonds:', hb_per_frame
-        write(10,*) '<h>:',ave_h
-        write(6,*)'written in '//trim(filename)//&
+        WRITE(10,*) 'Ave. No. bonds:', hb_per_frame
+        WRITE(10,*) '<h>:',ave_h
+        WRITE(6,*)'written in '//trim(filename)//&
                   '_wat_pair_ave_h_ihb_'//char_thickness//'.dat'
       close(10)
       deallocate (h,corr_h, sq_corr_h, hb)

@@ -41,7 +41,7 @@
       !parameters
       !==========
       integer, parameter :: rk=8 ! local 
-      integer, parameter :: d_len=3 ! for storing the length of the character which represents the thickness of the interface
+      integer, parameter :: d_len=1 ! for storing the length of the character which represents the thickness of the interface (d_len = 1--9)
 
       character(LEN=200), INTENT(INOUT) :: filename,pos_filename
       character(LEN=200), INTENT(IN) :: list_filename

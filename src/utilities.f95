@@ -167,7 +167,7 @@
                        y(iatom,imovie),z(iatom,imovie)
               if (trim(atom_type(iatom)) .eq. 'O') THEN
                   i=i+1
-                  get_ndx_of_oxygen(i) = iatom ! ONCE, I write imovie here. This mistake leads to obvious errors in the results
+                  get_ndx_of_oxygen(i) = iatom ! ONCE, I WRITE imovie here. This mistake leads to obvious errors in the results
               endif
           enddo
       enddo
@@ -466,11 +466,9 @@
           if (trim(atom_type(iatom)) .eq. 'O') THEN
                  ndx_O(i+1)=iatom
                  i=i+1      
-                 !write(*,*) "iatom:(test O) ", iatom
           ELSEIF(trim(atom_type(iatom)) .eq. 'H') THEN
                  ndx_H(ii+1)=iatom
                  ii=ii+1
-                 !write(*,*) "iatom:(test) ", iatom
           else
           endif
       enddo 
@@ -486,8 +484,8 @@
       do j =1, 1 ! Consider one step
           do ii=1,i_H 
               m3=ndx_H(ii)
-              !write(*,*) "i_H: ", i_H
-              !write(*,*) "m3: ", m3
+              !WRITE(*,*) "i_H: ", i_H
+              !WRITE(*,*) "m3: ", m3
               ! I use pbc to consider the distance r
               r_a= (/x(m2,j),y(m2,j),z(m2,j)/)  ! Coordinate of O2
               r_b = (/x(m3,j),y(m3,j),z(m3,j)/) ! Coordinate of H
@@ -694,14 +692,14 @@
   character(len=20) function int2str(k)
       !  "Convert an INTEGER to string."
       INTEGER, intent(in) :: k
-      write (int2str, *) k
+      WRITE (int2str, *) k
       int2str = adjustl(int2str)
   end function int2str
 
   character(len=20) function str(k)
       !  "Convert an INTEGER/REAL to string."
       REAL (KIND=8), intent(in) :: k
-      write (str, '(F3.1)') k
+      WRITE (str, '(F3.1)') k
       str = adjustl(str)
   end function str
   
@@ -726,12 +724,12 @@
       INTEGER, INTENT(IN) :: nmo_start, nmo_end  ! To get the total number of moves
       INTEGER, INTENT(IN) :: ns ! Get one sample from the trajectory every ns step.
 
-      write(*,*) 'In function sampling_number: nmo_end = ', nmo_end
+      WRITE(*,*) 'In function sampling_number: nmo_end = ', nmo_end
       ! no. of samples = INT({no. of moves}/ns)
       positive: IF (nmo_end <0 .OR. nmo_start < 0 .OR. ns <0) THEN
-        write(*,*) 'Please enter non-negative values for the ns, starting step and ending step.'
+        WRITE(*,*) 'Please enter non-negative values for the ns, starting step and ending step.'
       ELSE IF (nmo_end < nmo_start) THEN
-        write(*,*) 'Please note that starting step shoud not larger than  ending step.'
+        WRITE(*,*) 'Please note that starting step shoud not larger than  ending step.'
       ELSE IF (ns == 0) THEN
         sampling_number = nmo_end-(nmo_start-1)
       ELSE 
@@ -761,7 +759,7 @@
       INTEGER :: y
       
       i_sample = 1
-      write(*,*) "In utilities.f95, read_traj(): New total time steps (n_samples):", n_samples
+      WRITE(*,*) "In utilities.f95, read_traj(): New total time steps (n_samples):", n_samples
       DO WHILE (i_sample < n_samples+1) ! +1 means i_sample can take the value of n_samples 
           READ(indx, '(1X,A4)') head_char  ! for some other format, one can use this format
           PRE_CHECK:IF (head_char=="i = ") THEN
@@ -824,7 +822,7 @@
       INTEGER :: y
       
       i_sample = 1
-      write(*,*) "In utilities.f95, read_traj_sphere(): New total time steps (n_samples):", n_samples
+      WRITE(*,*) "In utilities.f95, read_traj_sphere(): New total time steps (n_samples):", n_samples
       DO WHILE (i_sample < n_samples+1) ! +1 means i_sample can take the value of n_samples 
           READ(indx, '(1X,A4)') head_char  ! for some other format, one can use this format
           PRE_CHECK:IF (head_char=="i = ") THEN
@@ -834,7 +832,6 @@
                   !-------------------------------------------------------------------------------------------------------
                   !We use y>nmo_start-1, because we want to consider the first step 'i=0'
                   !-------------------------------------------------------------------------------------------------------
-                  !WRITE(*,*)"read_traj():", head_char, y
                   BACKSPACE(UNIT=indx) ! Because we have to read the whole line with ' i = ' line.
                   READ(indx,130) sampled_movie(i_sample), sampled_time(i_sample), sampled_energy(i_sample)
                   130 FORMAT (1X,4X,I8,9X,F12.3,6X,F20.10)
@@ -865,9 +862,6 @@
                         sphere_info(iatom, i_sample)%mass = 126.9045d0
                         sphere_info(iatom, i_sample)%radius = 1.40d0
                     endif
-                    !WRITE (*,131) & 
-                    !sphere_info(iatom, i_sample)%atom_name, sphere_info(iatom,i_sample)%coord(1), &
-                    !sphere_info(iatom,i_sample)%coord(2), sphere_info(iatom,i_sample)%coord(3)
                   enddo inner
                   i_sample = i_sample + 1 !The position is important. It must be located before ENDIF 
               ENDIF CHECK_HEAD
@@ -1059,7 +1053,6 @@
       IF ( trim(sphere_info(i,start_step)%name) == trim(atom_name) ) THEN
         n_count = n_count + 1
         indices(n_count) = i
-        !WRITE(*,*)"indices(n_count): ", indices(n_count)
       ENDIF
     END DO
   END SUBROUTINE obtain_indices

@@ -651,10 +651,10 @@ INTERFACE
       REAL(KIND=rk) :: r21, r31, r32, r23 ! For the second criterion of HB
       REAL(KIND=rk) ::qj, tot_hb, delta_t, delta_t0, hb_per_frame, ave_h
       REAL(KIND=rk),dimension(3) :: r1, r2, r3 ! pbc 
-      integer :: m1,m2,m3,mt,nqj,tot_nhb,n_bonded_pairs,ns
-      REAL(KIND=rk),allocatable,DIMENSION(:)  :: h,h_d,hb,corr_n
-      REAL(KIND=rk),allocatable,DIMENSION(:,:) :: x,y,z
-      integer,allocatable,dimension(:) :: ndx_1,ndx_2,nhb_exist
+      integer :: m1, m2, m3, mt, nqj, tot_nhb, n_bonded_pairs, ns
+      REAL(KIND=rk),allocatable,DIMENSION(:)  :: h, h_d, hb, corr_n
+      REAL(KIND=rk),allocatable,DIMENSION(:,:) :: x, y, z
+      integer,allocatable,dimension(:) :: ndx_1, ndx_2, nhb_exist
       integer,dimension(4) :: ndx_3_list
       REAL(KIND=rk) :: scalar 
       logical,allocatable,DIMENSION(:)  :: hb_exist
@@ -672,7 +672,7 @@ INTERFACE
       nb_divy,nb_divz,thickness,surf_info)
       IMPORT :: atom
       IMPLICIT NONE
-      character(LEN=200),INTENT(INOUT) :: filename,pos_filename
+      character(LEN=200),INTENT(INOUT) :: filename, pos_filename
       character(LEN=200),INTENT(IN) :: list_filename
       integer,INTENT(IN) :: criterion
       INTEGER,INTENT(IN) :: nat ! number of atoms

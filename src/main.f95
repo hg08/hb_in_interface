@@ -104,7 +104,7 @@ PROGRAM main_interface
   !====================
   allocate(surf_info(2,n_grid,n_samples))
   surf_info = 0
-  !write(*,*) "SHAPE(surf_info)= ", SHAPE(surf_info)
+  !WRITE(*,*) "SHAPE(surf_info)= ", SHAPE(surf_info)
   ns_2nd = 1 ! sample freq is 1, ie., all data are sampled
   WRITE(*,*) "read_surf_traj is starting..."
   CALL read_surf_traj(surf_filename,nmo_start,nmo_end,ns_2nd,n_grid,n_samples,surf_info)
@@ -136,6 +136,6 @@ PROGRAM main_interface
                     nb_divz,thickness,surf_info)
 
   call system_clock(end_time,rat)
-  write(6, *)"elapsed time: ", real(end_time-begin_time)/real(rat) 
+  WRITE(6, *)"elapsed time: ", real(end_time-begin_time)/real(rat) 
 
 END PROGRAM main_interface 
